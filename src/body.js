@@ -62,6 +62,7 @@ export default class Body {
 		}
 
 		this[INTERNALS] = {
+			/** @type {Stream|Buffer|Blob|null} */
 			body,
 			boundary,
 			disturbed: false,
@@ -198,7 +199,7 @@ async function consumeBody(data) {
 
 	try {
 		for await (const chunk of body) {
-			const bytes = typeof chunk === "string" ? Buffer.from(chunk) : chunk
+			const bytes = typeof chunk === 'string' ? Buffer.from(chunk) : chunk;
 			if (data.size > 0 && accumBytes + bytes.byteLength > data.size) {
 				const err = new FetchError(`content size at ${data.url} over limit: ${data.size}`, 'max-size');
 				body.destroy(err);
@@ -321,7 +322,7 @@ export const extractContentType = (body, request) => {
  *
  * ref: https://fetch.spec.whatwg.org/#concept-body-total-bytes
  *
- * @param {any} obj.body Body object from the Body instance.
+ * @param {Body} request Body object from the Body instance.
  * @returns {number | null}
  */
 export const getTotalBytes = request => {
