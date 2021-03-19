@@ -114,7 +114,7 @@ describe('FormData', () => {
 		expect(await response.text()).to.have.string('Hello, World!');
 		// Note: getTotalBytes assumes body could be form data but it never is
 		// because it gets normalized into a stream.
-		expect(getTotalBytes({...response, body: form})).to.be.greaterThan(20);
+		expect(getTotalBytes({...response, _body: form})).to.be.greaterThan(20);
 	});
 
 	it('Request supports FormData body', async () => {

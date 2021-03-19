@@ -55,15 +55,15 @@ export default async function fetch(url, options_) {
 		const abort = () => {
 			const error = new AbortError('The operation was aborted.');
 			reject(error);
-			if (request.body && request.body instanceof Stream.Readable) {
-				request.body.destroy(error);
+			if (request._body && request._body instanceof Stream.Readable) {
+				request._body.destroy(error);
 			}
 
-			if (!response || !response.body) {
+			if (!response || !response._body) {
 				return;
 			}
 
-			response.body.emit('error', error);
+			response._body.emit('error', error);
 		};
 
 		if (signal && signal.aborted) {
@@ -96,7 +96,7 @@ export default async function fetch(url, options_) {
 		});
 
 		fixResponseChunkedTransferBadEnding(request_, err => {
-			response.body.destroy(err);
+			response._body.destroy(err);
 		});
 
 		/* c8 ignore next 18 */
@@ -113,7 +113,7 @@ export default async function fetch(url, options_) {
 					if (response && endedWithEventsCount < s._eventsCount && !hadError) {
 						const err = new Error('Premature close');
 						err.code = 'ERR_STREAM_PREMATURE_CLOSE';
-						response.body.emit('error', err);
+						response._body.emit('error', err);
 					}
 				});
 			});
@@ -166,13 +166,13 @@ export default async function fetch(url, options_) {
 							agent: request.agent,
 							compress: request.compress,
 							method: request.method,
-							body: request.body,
+							body: request._body,
 							signal: request.signal,
 							size: request.size
 						};
 
 						// HTTP-redirect fetch step 9
-						if (response_.statusCode !== 303 && request.body && options_.body instanceof Stream.Readable) {
+						if (response_.statusCode !== 303 && request._body && options_.body instanceof Stream.Readable) {
 							reject(new FetchError('Cannot follow redirect with body being a readable stream', 'unsupported-redirect'));
 							finalize();
 							return;
@@ -286,7 +286,7 @@ export default async function fetch(url, options_) {
 			resolve(response);
 		});
 
-		writeToStream(request_, request);
+		writeToStream(request_, request._body);
 	});
 }
 

@@ -81,6 +81,10 @@ export default class Body {
 	}
 
 	get body() {
+		console.log(`!!! ${new Error().stack}`)
+	}
+
+	get _body() {
 		return this[INTERNALS].body;
 	}
 
@@ -170,7 +174,7 @@ async function consumeBody(data) {
 		throw data[INTERNALS].error;
 	}
 
-	let {body} = data;
+	let {body} = data[INTERNALS];
 
 	// Body is null
 	if (body === null) {
@@ -239,7 +243,7 @@ async function consumeBody(data) {
 export const clone = (instance, highWaterMark) => {
 	let p1;
 	let p2;
-	let {body} = instance;
+	let {body} = instance[INTERNALS];
 
 	// Don't allow cloning a used body
 	if (instance.bodyUsed) {
@@ -326,7 +330,7 @@ export const extractContentType = (body, request) => {
  * @returns {number | null}
  */
 export const getTotalBytes = request => {
-	const {body} = request;
+	const {_body: body} = request;
 
 	// Body is null or undefined
 	if (body === null) {
@@ -361,10 +365,10 @@ export const getTotalBytes = request => {
  * Write a Body to a Node.js WritableStream (e.g. http.Request) object.
  *
  * @param {Stream.Writable} dest The stream to write to.
- * @param obj.body Body object from the Body instance.
+ * @param {null|Buffer|Blob|Stream} body Body object from the Body instance.
  * @returns {void}
  */
-export const writeToStream = (dest, {body}) => {
+export const writeToStream = (dest, body) => {
 	if (body === null) {
 		// Body is null
 		dest.end();

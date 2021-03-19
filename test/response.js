@@ -131,7 +131,7 @@ describe('Response', () => {
 		expect(cl.statusText).to.equal('production');
 		expect(cl.ok).to.be.false;
 		// Clone body shouldn't be the same body
-		expect(cl.body).to.not.equal(body);
+		expect(cl._body).to.not.equal(body);
 		return cl.text().then(result => {
 			expect(result).to.equal('a=1');
 		});
@@ -201,7 +201,7 @@ describe('Response', () => {
 
 	it('should default to null as body', () => {
 		const res = new Response();
-		expect(res.body).to.equal(null);
+		expect(res._body).to.equal(null);
 
 		return res.text().then(result => expect(result).to.equal(''));
 	});
