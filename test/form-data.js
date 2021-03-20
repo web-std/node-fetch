@@ -1,7 +1,7 @@
 import FormData from 'formdata-node';
 import Blob from 'fetch-blob';
 import {Response, Request} from '../src/index.js';
-import {getTotalBytes} from '../src/body.js';
+import {getTotalBytes, BODY} from '../src/body.js';
 
 import chai from 'chai';
 
@@ -114,7 +114,7 @@ describe('FormData', () => {
 		expect(await response.text()).to.have.string('Hello, World!');
 		// Note: getTotalBytes assumes body could be form data but it never is
 		// because it gets normalized into a stream.
-		expect(getTotalBytes({...response, _body: form})).to.be.greaterThan(20);
+		expect(getTotalBytes({...response, [BODY]: form})).to.be.greaterThan(20);
 	});
 
 	it('Request supports FormData body', async () => {

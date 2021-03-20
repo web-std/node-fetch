@@ -17,17 +17,23 @@ import {isBlob, isURLSearchParameters, isFormData} from './utils/is.js';
 import {blobToNodeStream} from './utils/blob-to-stream.js';
 
 const INTERNALS = Symbol('Body internals');
+export const BODY = Symbol('Body content');
 
 /**
  * Body mixin
  *
  * Ref: https://fetch.spec.whatwg.org/#body
  *
- * @param   Stream  body  Readable stream
+ * @param   Stream  stream  Readable stream
  * @param   Object  opts  Response options
  * @return  Void
  */
 export default class Body {
+	/**
+	 * 
+	 * @param {BodyInit|Stream} body
+	 * @param {{size?:number}} options
+	 */
 	constructor(body, {
 		size = 0
 	} = {}) {
@@ -80,12 +86,8 @@ export default class Body {
 		}
 	}
 
-	get body() {
-		console.log(`!!! ${new Error().stack}`)
-	}
-
-	get _body() {
-		return this[INTERNALS].body;
+	get [BODY]() {
+		return this[INTERNALS].body
 	}
 
 	get bodyUsed() {
@@ -161,7 +163,8 @@ Object.defineProperties(Body.prototype, {
  *
  * Ref: https://fetch.spec.whatwg.org/#concept-body-consume-body
  *
- * @return Promise
+ * @param {Body} data
+ * @return {Promise<Buffer>}
  */
 async function consumeBody(data) {
 	if (data[INTERNALS].disturbed) {
@@ -330,7 +333,7 @@ export const extractContentType = (body, request) => {
  * @returns {number | null}
  */
 export const getTotalBytes = request => {
-	const {_body: body} = request;
+	const body = request[BODY];
 
 	// Body is null or undefined
 	if (body === null) {

@@ -32,7 +32,7 @@ import {FetchError as FetchErrorOrig} from '../src/errors/fetch-error.js';
 import HeadersOrig, {fromRawHeaders} from '../src/headers.js';
 import RequestOrig from '../src/request.js';
 import ResponseOrig from '../src/response.js';
-import Body, {getTotalBytes, extractContentType} from '../src/body.js';
+import Body, {getTotalBytes, extractContentType, BODY} from '../src/body.js';
 import TestServer from './utils/server.js';
 
 const {
@@ -138,7 +138,7 @@ describe('node-fetch', () => {
 		return fetch(url).then(res => {
 			expect(res).to.be.an.instanceof(Response);
 			expect(res.headers).to.be.an.instanceof(Headers);
-			expect(res._body).to.be.an.instanceof(stream.Transform);
+			expect(res[BODY]).to.be.an.instanceof(stream.Transform);
 			expect(res.bodyUsed).to.be.false;
 
 			expect(res.url).to.equal(url);
@@ -619,8 +619,8 @@ describe('node-fetch', () => {
 			expect(res.ok).to.be.true;
 
 			return expect(new Promise((resolve, reject) => {
-				res._body.on('error', reject);
-				res._body.on('close', resolve);
+				res[BODY].on('error', reject);
+				res[BODY].on('close', resolve);
 			})).to.eventually.be.rejectedWith(Error, 'Premature close')
 				.and.have.property('code', 'ERR_STREAM_PREMATURE_CLOSE');
 		});
@@ -663,7 +663,7 @@ describe('node-fetch', () => {
 				return chunks;
 			};
 
-			return expect(read(res._body))
+			return expect(read(res[BODY]))
 				.to.eventually.be.rejectedWith(Error, 'Premature close')
 				.and.have.property('code', 'ERR_STREAM_PREMATURE_CLOSE');
 		});
@@ -1071,7 +1071,7 @@ describe('node-fetch', () => {
 				))
 					.to.eventually.be.fulfilled
 					.then(res => {
-						res._body.once('error', err => {
+						res[BODY].once('error', err => {
 							expect(err)
 								.to.be.an.instanceof(Error)
 								.and.have.property('name', 'AbortError');
@@ -1704,7 +1704,7 @@ describe('node-fetch', () => {
 			expect(res.status).to.equal(200);
 			expect(res.statusText).to.equal('OK');
 			expect(res.headers.get('content-type')).to.equal('text/plain');
-			expect(res._body).to.be.an.instanceof(stream.Transform);
+			expect(res[BODY]).to.be.an.instanceof(stream.Transform);
 			return res.text();
 		}).then(text => {
 			expect(text).to.equal('');
@@ -1734,7 +1734,7 @@ describe('node-fetch', () => {
 			expect(res.status).to.equal(200);
 			expect(res.statusText).to.equal('OK');
 			expect(res.headers.get('allow')).to.equal('GET, HEAD, OPTIONS');
-			expect(res._body).to.be.an.instanceof(stream.Transform);
+			expect(res[BODY]).to.be.an.instanceof(stream.Transform);
 		});
 	});
 
@@ -1780,8 +1780,8 @@ describe('node-fetch', () => {
 	it('should allow piping response body as stream', () => {
 		const url = `${base}hello`;
 		return fetch(url).then(res => {
-			expect(res._body).to.be.an.instanceof(stream.Transform);
-			return streamToPromise(res._body, chunk => {
+			expect(res[BODY]).to.be.an.instanceof(stream.Transform);
+			return streamToPromise(res[BODY], chunk => {
 				if (chunk === null) {
 					return;
 				}
@@ -1795,8 +1795,8 @@ describe('node-fetch', () => {
 		const url = `${base}hello`;
 		return fetch(url).then(res => {
 			const r1 = res.clone();
-			expect(res._body).to.be.an.instanceof(stream.Transform);
-			expect(r1._body).to.be.an.instanceof(stream.Transform);
+			expect(res[BODY]).to.be.an.instanceof(stream.Transform);
+			expect(r1[BODY]).to.be.an.instanceof(stream.Transform);
 			const dataHandler = chunk => {
 				if (chunk === null) {
 					return;
@@ -1806,8 +1806,8 @@ describe('node-fetch', () => {
 			};
 
 			return Promise.all([
-				streamToPromise(res._body, dataHandler),
-				streamToPromise(r1._body, dataHandler)
+				streamToPromise(res[BODY], dataHandler),
+				streamToPromise(r1[BODY], dataHandler)
 			]);
 		});
 	});
