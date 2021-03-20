@@ -3,8 +3,10 @@ import * as stream from 'stream';
 import {TextEncoder} from 'util';
 import chai from 'chai';
 import Blob from 'fetch-blob';
+import buffer from 'buffer';
 import {Response} from '../src/index.js';
 import TestServer from './utils/server.js';
+import {BODY} from '../src/body.js'
 
 const {expect} = chai;
 
@@ -130,7 +132,7 @@ describe('Response', () => {
 		expect(cl.statusText).to.equal('production');
 		expect(cl.ok).to.be.false;
 		// Clone body shouldn't be the same body
-		expect(cl.body).to.not.equal(body);
+		expect(cl[BODY]).to.not.equal(body);
 		return cl.text().then(result => {
 			expect(result).to.equal('a=1');
 		});
@@ -173,6 +175,15 @@ describe('Response', () => {
 		});
 	});
 
+	if (buffer.Blob) {
+		it('should support Buffer.Blob as body', () => {
+			const res = new Response(new buffer.Blob(['a=1']));
+			return res.text().then(result => {
+				expect(result).to.equal('a=1');
+			});
+		});
+	}
+
 	it('should support Uint8Array as body', () => {
 		const encoder = new TextEncoder();
 		const res = new Response(encoder.encode('a=1'));
@@ -191,7 +202,7 @@ describe('Response', () => {
 
 	it('should default to null as body', () => {
 		const res = new Response();
-		expect(res.body).to.equal(null);
+		expect(res[BODY]).to.equal(null);
 
 		return res.text().then(result => expect(result).to.equal(''));
 	});
