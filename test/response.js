@@ -6,7 +6,7 @@ import Blob from 'fetch-blob';
 import buffer from 'buffer';
 import {Response} from '../src/index.js';
 import TestServer from './utils/server.js';
-import {BODY} from '../src/body.js'
+import {BODY} from '../src/body.js';
 
 const {expect} = chai;
 

@@ -30,7 +30,6 @@ export const BODY = Symbol('Body content');
  */
 export default class Body {
 	/**
-	 * 
 	 * @param {BodyInit|Stream} body
 	 * @param {{size?:number}} options
 	 */
@@ -87,7 +86,7 @@ export default class Body {
 	}
 
 	get [BODY]() {
-		return this[INTERNALS].body
+		return this[INTERNALS].body;
 	}
 
 	get bodyUsed() {

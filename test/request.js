@@ -10,7 +10,7 @@ import Blob from 'fetch-blob';
 
 import TestServer from './utils/server.js';
 import {Request} from '../src/index.js';
-import {BODY} from '../src/body.js'
+import {BODY} from '../src/body.js';
 
 const {expect} = chai;
 
