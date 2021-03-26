@@ -75,7 +75,8 @@
   },
   "dependencies": {
     "data-uri-to-buffer": "^3.0.1",
-    "fetch-blob": "^2.1.1"
+    "@web-std/blob": "git://github.com/web-std/blob.git#feat/migrate",
+    "web-streams-polyfill": "^3.0.2"
   },
   "esm": {
     "sourceMap": true,
