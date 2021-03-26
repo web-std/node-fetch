@@ -87,7 +87,8 @@
     "compilerOptions": {
       "target": "esnext",
       "lib": [
-        "es2018"
+        "es2018",
+        "DOM"
       ],
       "allowSyntheticDefaultImports": false,
       "esModuleInterop": false
