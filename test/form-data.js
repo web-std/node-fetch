@@ -1,5 +1,5 @@
 import FormData from 'formdata-node';
-import Blob from 'fetch-blob';
+import {Blob} from '@web-std/blob';
 
 import chai from 'chai';
 
